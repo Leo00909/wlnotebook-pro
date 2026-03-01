@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="google-site-verification"
+      content="google923d3d0d4c58acf0.html"
+    />
+    <title>NoteBook Pro - 专业记事本</title>
+    <meta
+      name="description"
+      content="NoteBook Pro - 专业级在线记事本应用。支持自动保存、标签分类、多种格式导出（TXT/JSON）、实时保存状态、文本格式化等功能。完全免费使用，无需注册。"
+    />
+    <meta
+      name="keywords"
+      content="记事本,笔记应用,在线记事本,免费笔记,文本编辑器,笔记软件,云笔记"
+    />
+    <meta name="author" content="NoteBook Pro" />
+    <meta property="og:title" content="NoteBook Pro - 专业记事本应用" />
+    <meta
+      property="og:description"
+      content="免费在线记事本，支持自动保存、标签分类、多格式导出。随时随地记录你的想法。"
+    />
+    <meta property="og:url" content="https://wlnotepad-pro.netlify.app/" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#5b7cfa" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-wrapper">
+      <!-- 头部 -->
+      <header class="header">
+        <div class="header-left">
+          <h1 class="app-title">📝 NoteBook Pro</h1>
+          <p class="app-subtitle">专业级记事本应用</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <span class="stat-label">笔记</span>
+            <span class="stat-value" id="noteCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">字符</span>
+            <span class="stat-value" id="charCount">0</span>
+          </div>
+          <div class="stat-item" id="saveStatus" class="save-status">
+            <span class="status-dot"></span>
+            <span class="status-text">已保存</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 工具栏 -->
+      <div class="toolbar">
+        <div class="toolbar-search">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="🔍 搜索笔记..."
+          />
+        </div>
+        <div class="toolbar-actions">
+          <button id="newNoteBtn" class="btn btn-primary" title="新建笔记">
+            <span class="btn-icon">+</span>
+            <span class="btn-text">新建</span>
+          </button>
+          <button
+            id="deleteNoteBtn"
+            class="btn btn-danger"
+            title="删除当前笔记"
+          >
+            <span class="btn-icon">🗑</span>
+            <span class="btn-text">删除</span>
+          </button>
+          <div class="toolbar-divider"></div>
+          <button
+            id="exportTxtBtn"
+            class="btn btn-secondary"
+            title="导出为文本"
+          >
+            <span class="btn-icon">📄</span>
+            <span class="btn-text">导出TXT</span>
+          </button>
+          <button
+            id="exportJsonBtn"
+            class="btn btn-secondary"
+            title="导出为JSON"
+          >
+            <span class="btn-icon">📊</span>
+            <span class="btn-text">导出JSON</span>
+          </button>
+          <button id="importBtn" class="btn btn-secondary" title="导入笔记">
+            <span class="btn-icon">📂</span>
+            <span class="btn-text">导入</span>
+          </button>
+          <input
+            type="file"
+            id="importFile"
+            accept=".json"
+            style="display: none"
+          />
+        </div>
+      </div>
+
+      <!-- 主容器 -->
+      <div class="main-content">
+        <!-- 左侧侧边栏 -->
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <h2>我的笔记</h2>
+          </div>
+          <div id="notesList" class="notes-list"></div>
+        </aside>
+
+        <!-- 右侧编辑区 -->
+        <main class="editor-area">
+          <!-- 空状态 -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h2>暂无笔记</h2>
+            <p>点击左上角的 <strong>+新建</strong> 按钮来创建你的第一条笔记</p>
+          </div>
+
+          <!-- 编辑器 -->
+          <div
+            id="editorContainer"
+            class="editor-container"
+            style="display: none"
+          >
+            <!-- 标题栏 -->
+            <div class="editor-title-bar">
+              <input
+                type="text"
+                id="noteTitle"
+                class="note-title"
+                placeholder="输入笔记标题..."
+              />
+              <div class="title-bar-info">
+                <span id="createdTime" class="time-info">创建: -</span>
+                <span id="modifiedTime" class="time-info">修改: -</span>
+              </div>
+            </div>
+
+            <!-- 编辑工具栏 -->
+            <div class="editor-toolbar">
+              <div class="toolbar-group">
+                <button class="tool-btn" id="boldBtn" title="粗体 Ctrl+B">
+                  <strong>B</strong>
+                </button>
+                <button class="tool-btn" id="italicBtn" title="斜体 Ctrl+I">
+                  <em>I</em>
+                </button>
+                <button
+                  class="tool-btn"
+                  id="underlineBtn"
+                  title="下划线 Ctrl+U"
+                >
+                  <u>U</u>
+                </button>
+              </div>
+              <div class="toolbar-divider"></div>
+              <div class="toolbar-group">
+                <button class="tool-btn" id="codeBtn" title="代码">
+                  &lt;/&gt;
+                </button>
+                <button class="tool-btn" id="quoteBtn" title="引用">
+                  &quot;
+                </button>
+                <button class="tool-btn" id="h1Btn" title="标题 H1">H1</button>
+              </div>
+              <div class="toolbar-divider"></div>
+              <div class="toolbar-group">
+                <button
+                  class="tool-btn"
+                  id="clearFormattingBtn"
+                  title="清除格式"
+                >
+                  Aa
+                </button>
+              </div>
+              <div class="spacer"></div>
+              <div class="toolbar-group">
+                <button class="tool-btn" id="wordCountBtn" title="字数统计">
+                  📊
+                </button>
+              </div>
+            </div>
+
+            <!-- 编辑区 -->
+            <textarea
+              id="noteContent"
+              class="note-content"
+              placeholder="开始输入你的笔记..."
+            ></textarea>
+
+            <!-- 底部栏 -->
+            <div class="editor-footer">
+              <div class="footer-left">
+                <div class="tags-container">
+                  <input
+                    type="text"
+                    id="tagsInput"
+                    class="tags-input"
+                    placeholder="添加标签（用逗号分隔）"
+                  />
+                  <div id="tagsList" class="tags-list"></div>
+                </div>
+              </div>
+              <div class="footer-right">
+                <div class="color-picker-group">
+                  <span class="color-label">背景色:</span>
+                  <div class="color-picker">
+                    <div
+                      class="color-option"
+                      data-color="white"
+                      title="白色"
+                      style="background-color: #ffffff; border: 2px solid #ddd"
+                    ></div>
+                    <div
+                      class="color-option"
+                      data-color="yellow"
+                      title="黄色"
+                      style="background-color: #fffacd"
+                    ></div>
+                    <div
+                      class="color-option"
+                      data-color="pink"
+                      title="粉色"
+                      style="background-color: #ffe4e1"
+                    ></div>
+                    <div
+                      class="color-option"
+                      data-color="blue"
+                      title="蓝色"
+                      style="background-color: #e6f2ff"
+                    ></div>
+                    <div
+                      class="color-option"
+                      data-color="green"
+                      title="绿色"
+                      style="background-color: #f0fff0"
+                    ></div>
+                    <div
+                      class="color-option"
+                      data-color="purple"
+                      title="紫色"
+                      style="background-color: #f3e5f5"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
